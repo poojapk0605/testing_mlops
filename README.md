@@ -1,1 +1,1 @@
-Testing Artifact pushing 3rd time
+Testing Artifact pushing 4th time with proxy setup
