@@ -30,7 +30,7 @@ jobs:
       run: |
         docker build -t $BACKEND_IMAGE:latest ./Backend
         docker push $BACKEND_IMAGE:latest
-
+    
     # Upload to Vertex AI
     - name: Upload Model to Vertex AI
       run: |
@@ -63,11 +63,11 @@ jobs:
           --model=$MODEL_ID \
           --display-name="neu-backend" \
           --machine-type="n1-standard-2" \
-          --traffic-split=0=100 || echo "Already deployed"
-          --set-env-vars="GCP_PROJECT=${{ secrets.GCP_PROJECT_ID }}"
+          --traffic-split=0=100 \
+          --set-env-vars="GCP_PROJECT=${{ secrets.GCP_PROJECT_ID }}"  || echo "Already deployed"
 
     # Build and Push Frontend (Optional Cloud Run or GKE later)
     - name: Build and Push Frontend
       run: |
-        docker build -t $FRONTEND_IMAGE:latest ./Frontend
-        docker push $FRONTEND_IMAGE:latest
+        docker build -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/chatbot/neu-frontend:latest ./Frontend
+        docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/chatbot/neu-frontend:latest
