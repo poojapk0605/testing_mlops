@@ -24,16 +24,24 @@
       const answerBox = document.getElementById("answer");
       answerBox.textContent = "Loading...";
 
-      const response = await fetch("http://localhost:8000/query", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ query: question })
-      });
+      try {
+        const response = await fetch("/query", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ query: question })
+        });
 
-      const data = await response.json();
-      answerBox.textContent = data.answer || "No answer received.";
+        if (!response.ok) {
+          throw new Error("Request failed with status " + response.status);
+        }
+
+        const data = await response.json();
+        answerBox.textContent = data.answer || "No answer received.";
+      } catch (err) {
+        answerBox.textContent = "Error: " + err.message;
+      }
     }
   </script>
 </body>

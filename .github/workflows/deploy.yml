@@ -71,3 +71,9 @@ jobs:
       run: |
         docker build -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/chatbot/neu-frontend:latest ./Frontend
         docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/chatbot/neu-frontend:latest
+
+    - name: Build and Push Vertex Proxy
+      run: |
+          docker build -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/chatbot/vertex-proxy:latest ./Proxy
+          docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/chatbot/vertex-proxy:latest
+  
