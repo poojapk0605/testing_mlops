@@ -529,7 +529,7 @@ function App({ user, onLogout }) {
     try {
       const actualSearchMode = deepSearchMode ? "deepsearch" : searchMode;
       
-      const res = await fetch('${apiBaseUrl}/api/chat', {
+      const res = await fetch(`${apiBaseUrl}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
@@ -671,7 +671,7 @@ function App({ user, onLogout }) {
     // Send message to API
     const actualSearchMode = deepSearchMode ? "deepsearch" : searchMode;
     
-    fetch('${apiBaseUrl}/api/chat', {
+     fetch(`${apiBaseUrl}/api/chat`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
@@ -763,7 +763,7 @@ function App({ user, onLogout }) {
 
     try {
       // Remove from database
-      await fetch('${apiBaseUrl}/api/conversations/delete', {
+      await fetch(`${apiBaseUrl}/api/conversations/delete`, {
         method: 'DELETE',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ userId, conversationId: id })
@@ -852,7 +852,7 @@ function App({ user, onLogout }) {
 
     // Make API call to save feedback
     try {
-      const response = await fetch('${apiBaseUrl}/api/feedback', {
+      const response = await fetch(`${apiBaseUrl}/api/feedback`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
