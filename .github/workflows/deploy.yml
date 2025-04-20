@@ -26,7 +26,7 @@ jobs:
         run: |
           docker build \
             --build-arg REACT_APP_API_BASE_URL=https://your-api-url.com \
-            -t gcr.io/YOUR_PROJECT_ID/react-frontend:${{ github.sha }} \
+            -t gcr.io/${{secrets.GCP_PROJECT_ID}}/react-frontend:${{ github.sha }} \
             -f ./neu-chatbot/Dockerfile ./frontend
 
-          docker push gcr.io/YOUR_PROJECT_ID/react-frontend:${{ github.sha }}
+          docker push gcr.io/${{secrets.GCP_PROJECT_ID}}/react-frontend:${{ github.sha }}
