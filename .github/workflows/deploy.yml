@@ -25,7 +25,7 @@ jobs:
 
     - name: Build Docker image
       run: |
-        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/react-frontend:${{ github.sha }} -f ./frontend/Dockerfile ./frontend
+        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/react-frontend:${{ github.sha }} -f ./neu-chatbot/Dockerfile ./neu-chatbot
 
     - name: Push Docker image to GCR
       run: |
