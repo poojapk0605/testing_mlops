@@ -285,17 +285,8 @@ const DEFAULT_CONVERSATION = {
 // Main App component
 function App({ user, onLogout }) {
   const [showMenu, setShowMenu] = useState(false);
-  const [apiBaseUrl, setApiBaseUrl] = useState('');
-  useEffect(() => {
-    fetch('/config.json')
-      .then(res => res.json())
-      .then(config => {
-        setApiBaseUrl(config.API_BASE_URL);
-      })
-      .catch(err => {
-        console.error("Failed to load config:", err);
-      });
-  }, []);
+  const apiBaseUrl = process.env.REACT_APP_API_BASE_URL;
+
   const handleLogout = () => {
     // Clear storage to prevent data leakage
     sessionStorage.clear();
