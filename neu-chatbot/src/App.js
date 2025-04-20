@@ -5,7 +5,6 @@ import {
   MessageSquare, ChevronRight, X, Moon, Sun, Eye, EyeOff, 
   ThumbsUp, ThumbsDown, Copy, Radar, Send, BookOpen, School
 } from 'lucide-react';
-
 // Memoized Message Component
 const MessageComponent = memo(({
   message, 
@@ -672,7 +671,7 @@ function App({ user, onLogout }) {
     // Send message to API
     const actualSearchMode = deepSearchMode ? "deepsearch" : searchMode;
     
-    fetch('/api/chat', {
+    fetch('${apiBaseUrl}/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ 
