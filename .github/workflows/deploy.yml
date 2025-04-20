@@ -1,79 +1,32 @@
-name: Build and Deploy to GCP
+name: Build and Push Docker to GCR
 
 on:
   push:
-    branches: [main]
-
-env:
-  REGION: us-central1
-  FRONTEND_IMAGE: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/chatbot/neu-frontend
-  BACKEND_IMAGE: ${{ secrets.GCP_REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/chatbot/neu-backend
+    branches:
+      - main
 
 jobs:
-  deploy:
+  build-and-push:
+    name: Build Docker and Push to GCR
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout
+    - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Auth to GCP
+    - name: Authenticate with GCP
       uses: google-github-actions/auth@v1
       with:
-        credentials_json: ${{ secrets.GCP_SA_KEY }}
+        credentials_json: ${{ secrets.GCP_SA_KEY}}
 
-    - name: Configure Docker
-      run: gcloud auth configure-docker ${{ secrets.GCP_REGION }}-docker.pkg.dev
+    - name: Set up Docker authentication for GCR
+      run: |
+        gcloud auth configure-docker --quiet
 
-    # Build and Push Backend
-    - name: Build and Push Backend
+    - name: Build Docker image
       run: |
-        docker build -t $BACKEND_IMAGE:latest ./Backend
-        docker push $BACKEND_IMAGE:latest
-    
-    # Upload to Vertex AI
-    - name: Upload Model to Vertex AI
-      run: |
-        MODEL_ID=$(gcloud ai models upload \
-          --region=${{ secrets.GCP_REGION }} \
-          --display-name="neu-chatbot" \
-          --container-image-uri=$BACKEND_IMAGE:latest \
-          --format="value(name)")
-        echo "MODEL_ID=$MODEL_ID" >> $GITHUB_ENV
+        docker build -t gcr.io/${{ secrets.GCP_PROJECT_ID }}/react-frontend:${{ github.sha }} .
 
-    - name: Create or Reuse Endpoint
-      id: endpoint
+    - name: Push Docker image to GCR
       run: |
-        ENDPOINT_ID=$(gcloud ai endpoints list \
-          --region=${{ secrets.GCP_REGION }} \
-          --filter="displayName=neu-chatbot-endpoint" \
-          --format="value(name)")
-        if [ -z "$ENDPOINT_ID" ]; then
-          ENDPOINT_ID=$(gcloud ai endpoints create \
-            --region=${{ secrets.GCP_REGION }} \
-            --display-name="neu-chatbot-endpoint" \
-            --format="value(name)")
-        fi
-        echo "ENDPOINT_ID=$ENDPOINT_ID" >> $GITHUB_ENV
-
-    - name: Deploy to Vertex AI
-      run: |
-        gcloud ai endpoints deploy-model $ENDPOINT_ID \
-          --region=${{ secrets.GCP_REGION }} \
-          --model=$MODEL_ID \
-          --display-name="neu-backend" \
-          --machine-type="n1-standard-2" \
-          --traffic-split=0=100 \
-          --set-env-vars="GCP_PROJECT=${{ secrets.GCP_PROJECT_ID }}"  || echo "Already deployed"
-
-    # Build and Push Frontend (Optional Cloud Run or GKE later)
-    - name: Build and Push Frontend
-      run: |
-        docker build -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/chatbot/neu-frontend:latest ./Frontend
-        docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/chatbot/neu-frontend:latest
-
-    - name: Build and Push Vertex Proxy
-      run: |
-          docker build -t us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/chatbot/vertex-proxy:latest ./Proxy
-          docker push us-central1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/chatbot/vertex-proxy:latest
-  
+        docker push gcr.io/${{ secrets.GCP_PROJECT_ID }}/react-frontend:${{ github.sha }}
